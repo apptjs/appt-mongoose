@@ -38,7 +38,7 @@ import { Mongoose } from '@appt/mongoose';
 		}
 	}
 })
-export class AppDatabase(){}
+export class AppDatabase{}
 ```
 
 ### TModel
@@ -54,7 +54,7 @@ import { TModel } from '@appt/mongoose';
 		config: {}
 	}
 })
-export class TheModel(){
+export class TheModel {
 	constructor()
 	{
 	}
@@ -77,7 +77,7 @@ import { TSchema } from '@appt/mongoose';
 		config: {}
 	}
 })
-export class AppShema(){
+export class AppShema {
 	constructor(){
 		this.name = {
 			type: String,
