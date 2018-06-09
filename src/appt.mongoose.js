@@ -14,10 +14,26 @@ const set = mongoose.set.bind(mongoose);
 var schemas = {};
 
 class TModel {
-  constructor() {}
+  constructor() {
+    this.targetName = '';
+  }
    
-  exec(args, usable, Target, injectables) {
-    return this.getSchema(usable[0])
+  normalizeComponents(components){  
+    return new Promise(resolve => {
+      const component = components instanceof Array ? components[0] : components;
+      const schemaPromise = typeof component === 'string' 
+          ? new apptEcosystem.getEntity(component, this.targetName)()
+          : new component();
+
+      return schemaPromise.then(comp => resolve(comp));
+    });
+  }
+
+  exec(extend, Target, injectables) {
+    this.targetName = Target.name;
+
+    return this.normalizeComponents(extend.use)
+      .then(schema => this.getSchema(schema, Target.name))
       .then(entitySchema => {
         if(models[Target.name]) {
             return models[Target.name]
@@ -25,36 +41,31 @@ class TModel {
         else {          
             entitySchema.loadClass(Target);
                 
-            return model(Target.name, entitySchema);
+            return model(Target.name, entitySchema, extend.config);
         }        
       })
       .catch(err => console.log(err))
   }
 
-  getSchema(usable){
-    const schemaPromise = apptEcosystem.getEntity(usable);
+  getSchema(mySchema, targetName){
+    const schema = new mySchema.target();
     
-    return schemaPromise()
-      .then(mySchema => {
-        const schema = new mySchema.target();
-        
-        const parsedSchema = Object.keys(schema)
-          .reduce((prev, crr) => {
-              return Object.assign(prev, { [crr]: schema[crr] })
-          }, {});
+    const parsedSchema = Object.keys(schema)
+      .reduce((prev, crr) => {
+          return Object.assign(prev, { [crr]: schema[crr] })
+      }, {});
 
-        if(schemas && schemas[mySchema.target.name])
-          return new Schema(schemas[mySchema.target.name], mySchema.args);
-        else 
-          return new Schema(parsedSchema, mySchema.args);
-      })
+    if(schemas && schemas[mySchema.target.name])
+      return new Schema(schemas[mySchema.target.name], mySchema.args);
+    else 
+      return new Schema(parsedSchema, mySchema.args);
   }
 }
 
 class TSchema {
-   exec(args, usable, Target) {
+   exec(extend, Target) {
     return new Promise(resolve => {
-      resolve({target: Target, args: args})
+      resolve({target: Target, args: extend.config})
     })
   }
 }
@@ -90,7 +101,8 @@ const property = (args) => {
 
 class Mongoose{
   constructor(){
-    this.instance = 
+    this.instance = mongoose;
+
     this.defaultConfig = {
       uri: 'mongodb://localhost:27017/sample',
       debug: false,
