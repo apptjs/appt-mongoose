@@ -48,8 +48,13 @@ class TModel {
   }
 
   getSchema(mySchema, targetName){
-    const schema = new mySchema.target();
-    
+    let schema;
+
+    if(mySchema.injectables)
+      schema = new mySchema.target(...mySchema.injectables);
+    else 
+      schema = new mySchema.target();
+
     const parsedSchema = Object.keys(schema)
       .reduce((prev, crr) => {
           return Object.assign(prev, { [crr]: schema[crr] })
@@ -63,9 +68,9 @@ class TModel {
 }
 
 class TSchema {
-   exec(extend, Target) {
+   exec(extend, Target, injectables) {
     return new Promise(resolve => {
-      resolve({target: Target, args: extend.config})
+      resolve({target: Target, args: extend.config, injectables: injectables})
     })
   }
 }
