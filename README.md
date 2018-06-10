@@ -1,6 +1,7 @@
 # @appt/mongoose
 This is a plugin made for Appt that wraps [Mongoose ODM](https://www.npmjs.com/package/mongoose) to work into the *Appt's ecosystem* with advanced *database models and schemes*. 
-We assume you got here after seeing the [Appt's Main Page](https://github.com/brab0/appt). If you don't, **we strongly recommend** you to step back an take a 5 minutes reading to get used with some key concepts we're going to apply here.
+
+We assume you got here after seeing the [Appt's Core](https://www.npmjs.com/package/@appt/core) session of main concepts. If you don't, **we strongly recommend** you to step back an take a 5 minutes reading to get used with some key concepts we're going to apply here.
 
 
 ## Install
@@ -20,12 +21,12 @@ import {
 ```
 
 ### Mongoose
-At the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://github.com/brab0/appt/tree/master/core) package and it indicates our component should act as a database connector but also, it does not know *how or which kind of database to connect*? To this point we need to use a *"driver"*, which here is the *"Mongoose"*.  As the simple usage below shows, after `use` the Mongoose driver, you only need to provide the `uri` connection. If you need a little more configuration, you can set if you want to debug the connection *(default: false)* or even pass into options attribute any param allowed by the mongoose connection.
+At the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://www.npmjs.com/package/@appt/core#apptcore) package and it indicates our component should act as a database connector but also, it does not know *how or which kind of database to connect*? To this point we need to use a *"driver"*, which here is the *"Mongoose"*.  As the simple usage below shows, after `use` the Mongoose driver, you only need to provide the `uri` connection. If you need a little more configuration, you can set if you want to debug the connection *(default: false)* or even pass into options attribute any param allowed by the mongoose connection.
 ```javascript
-import { ApptComponent, TDatabase } from '@appt/core';
+import { Component, TDatabase } from '@appt/core';
 import { Mongoose } from '@appt/mongoose';
 
-@ApptComponent({
+@Component({
 	extend: {
 		type: TDatabase,
 		use: [Mongoose],
@@ -44,10 +45,10 @@ export class AppDatabase{}
 ### TModel
 This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect it to has a mongoose schema as well. To get there, just `use: ['TheSchema']` . You also can add any config allowed in a mongoose model by passing them into the config attribute.
 ```javascript
-import { ApptComponent } from '@appt/core';
+import { Component } from '@appt/core';
 import { TModel } from '@appt/mongoose';
 
-@ApptComponent({
+@Component({
 	extend: {
 		type: TModel,
 		use: ['TheSchema'],
@@ -68,10 +69,10 @@ export class TheModel {
 ### TSchema
 The special type to transform a component into a Mongoose Schema. All the configurations accepted by mongoose can be passed into the config attribute.
 ```javascript
-import { ApptComponent } from '@appt/core';
+import { Component } from '@appt/core';
 import { TSchema } from '@appt/mongoose';
 
-@ApptComponent({
+@Component({
 	extend: {
 		type: TSchema,
 		config: {}
