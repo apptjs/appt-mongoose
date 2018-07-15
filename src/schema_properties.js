@@ -79,7 +79,7 @@ export class SchemaProperties {
     });
   }
 
-  isObjectId(){
+  isObjectId(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {
