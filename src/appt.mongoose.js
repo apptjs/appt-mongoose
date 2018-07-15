@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const { models, Schema } = mongoose;
 
-const SchemaTypes = Schema.Types;
 const MongooseParse = mongoose.Types;
 
 const model = mongoose.model.bind(mongoose);
@@ -79,57 +78,6 @@ class TSchema {
   }
 }
 
-class SchemaProperties {
-  constructor()
-  {
-  }  
-
-  isEnum(options){
-    return {
-      ofStrings: (defaultValue) => Object.assign({ enum: options, type: String, trim: true, default: defaultValue || "" }),
-      ofNumbers: (defaultValue) => Object.assign({ enum: options, type: Number, default: defaultValue || 0 }),
-      ofDates: (defaultValue) => Object.assign({ enum: options, type: Date, default: defaultValue || Date.now }),
-      ofBooleans: (defaultValue) => Object.assign({ enum: options, type: Boolean, default: defaultValue || false }),
-      ofObjectIds: () => Object.assign({ enum: options, type: SchemaTypes.ObjectId })
-    }
-  }
-
-  isString(defaultValue){
-    return {
-      type: String,
-      trim: true,
-      default: defaultValue || ""
-    }
-  }
-
-  isNumber(defaultValue){
-    return {
-      type: Number,
-      default: defaultValue || 0
-    }
-  }
-
-  isDate(defaultValue){
-    return {
-      type: Date,
-      default: defaultValue || Date.now
-    }
-  }
-
-  isBoolean(defaultValue){
-    return {
-      type: Boolean,
-      default: defaultValue || false
-    }
-  }
-
-  isObjectId(){
-    return {
-      type: SchemaTypes.ObjectId
-    }
-  }
-}
-
 class Mongoose{
   constructor(){
     this.instance = mongoose;
@@ -179,7 +127,5 @@ export {
   TModel,
   TSchema,
   Mongoose,
-  SchemaTypes,
-  MongooseParse,
-  SchemaProperties
+  MongooseParse
 } 

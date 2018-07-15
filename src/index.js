@@ -1,10 +1,11 @@
-import { TModel, TSchema, Mongoose, SchemaTypes, MongooseParse, SchemaProperties } from './appt.mongoose';
+import { TModel, TSchema, Mongoose, MongooseParse } from './appt.mongoose';
+import { SchemaProperties, SchemaTypes } from './schema_properties';
 
 export {
-   Mongoose,
+   Mongoose,   
+   MongooseParse,
    TModel,
    TSchema,
    SchemaTypes,
-   MongooseParse,
    SchemaProperties
 }
