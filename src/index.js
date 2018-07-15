@@ -1,4 +1,4 @@
-import { TModel, TSchema, Mongoose, SchemaTypes, MongooseParse, property } from './appt.mongoose';
+import { TModel, TSchema, Mongoose, SchemaTypes, MongooseParse, SchemaProperties } from './appt.mongoose';
 
 export {
    Mongoose,
@@ -6,5 +6,5 @@ export {
    TSchema,
    SchemaTypes,
    MongooseParse,
-   property
+   SchemaProperties
 }

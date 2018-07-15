@@ -38,10 +38,14 @@ class TModel {
         if(models[Target.name]) {
             return models[Target.name]
         }
-        else {          
-            entitySchema.loadClass(Target);
-                
-            return model(Target.name, entitySchema, extend.config);
+        else {
+          if(injectables && injectables.length > 0){
+            new Target(...injectables);
+          }
+          
+          entitySchema.loadClass(Target);
+              
+          return model(Target.name, entitySchema, extend.config);
         }        
       })
       .catch(err => console.log(err))
@@ -75,32 +79,54 @@ class TSchema {
   }
 }
 
-const property = (args) => {
-  return function(target, key) {    
-    // if there is no default value
-    schemas = Object.assign(schemas, {
-      [target.constructor.name]: Object.assign({}, schemas[target.constructor.name], {
-        [key]: Object.assign({ type: {} }, args)
-      })
-    }) 
+class SchemaProperties {
+  constructor()
+  {
+  }  
 
-    var setter = function (newVal) {
-      schemas = Object.assign(schemas, {
-        [target.constructor.name]: Object.assign({}, schemas[target.constructor.name], {
-          [key]: Object.assign({
-            default: newVal,
-            type: typeof newVal
-          }, args)
-        })
-      })
-    };
-    
-    // Create new property with getter and setter
-    Object.defineProperty(target, key, {
-      set: setter,
-      enumerable: true,
-      configurable: true
-    });
+  isEnum(options){
+    return {
+      ofStrings: (defaultValue) => Object.assign({ enum: options, type: String, trim: true, default: defaultValue || "" }),
+      ofNumbers: (defaultValue) => Object.assign({ enum: options, type: Number, default: defaultValue || 0 }),
+      ofDates: (defaultValue) => Object.assign({ enum: options, type: Date, default: defaultValue || Date.now }),
+      ofBooleans: (defaultValue) => Object.assign({ enum: options, type: Boolean, default: defaultValue || false }),
+      ofObjectIds: () => Object.assign({ enum: options, type: SchemaTypes.ObjectId })
+    }
+  }
+
+  isString(defaultValue){
+    return {
+      type: String,
+      trim: true,
+      default: defaultValue || ""
+    }
+  }
+
+  isNumber(defaultValue){
+    return {
+      type: Number,
+      default: defaultValue || 0
+    }
+  }
+
+  isDate(defaultValue){
+    return {
+      type: Date,
+      default: defaultValue || Date.now
+    }
+  }
+
+  isBoolean(defaultValue){
+    return {
+      type: Boolean,
+      default: defaultValue || false
+    }
+  }
+
+  isObjectId(){
+    return {
+      type: SchemaTypes.ObjectId
+    }
   }
 }
 
@@ -155,5 +181,5 @@ export {
   Mongoose,
   SchemaTypes,
   MongooseParse,
-  property
+  SchemaProperties
 } 
