@@ -9,7 +9,7 @@ export class SchemaProperties {
   {
   }  
 
-  isEnum(options){
+  asEnum(options){
     
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
@@ -42,7 +42,7 @@ export class SchemaProperties {
     }
   }
 
-  isString(options){
+  asString(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {
@@ -52,7 +52,7 @@ export class SchemaProperties {
     })
   }
 
-  isNumber(options){
+  asNumber(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {
@@ -61,7 +61,7 @@ export class SchemaProperties {
     });
   }
 
-  isDate(options){
+  asDate(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {
@@ -70,7 +70,7 @@ export class SchemaProperties {
     });
   }
 
-  isBoolean(options){
+  asBoolean(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {
@@ -79,7 +79,7 @@ export class SchemaProperties {
     });
   }
 
-  isObjectId(options){
+  asObjectId(options){
     const assignOptions = (options, defaults) => Object.assign(defaults, options, { type: defaults.type });
 
     return assignOptions(options, {

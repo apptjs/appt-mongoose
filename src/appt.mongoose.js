@@ -1,4 +1,5 @@
 import { apptEcosystem } from '@appt/core';
+import customQueries from './custom_queries';
 
 const mongoose = require('mongoose');
 
@@ -7,6 +8,7 @@ const { models, Schema } = mongoose;
 const MongooseParse = mongoose.Types;
 
 const model = mongoose.model.bind(mongoose);
+
 const connect = mongoose.connect.bind(mongoose);
 const set = mongoose.set.bind(mongoose);
 
@@ -41,10 +43,14 @@ class TModel {
           if(injectables && injectables.length > 0){
             new Target(...injectables);
           }
-          
+                    
           entitySchema.loadClass(Target);
-              
-          return model(Target.name, entitySchema, extend.config);
+
+          entitySchema.statics = Object.assign(entitySchema.statics, customQueries);
+
+          const newModel = model(Target.name, entitySchema, extend.config);
+
+          return newModel;
         }        
       })
       .catch(err => console.log(err))
