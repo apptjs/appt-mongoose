@@ -1,4 +1,4 @@
-class DeepUpsert {  
+class Upsert {  
   static buildObjectsToUpsert(oldObjects, newObjects, comparable){
     return {
       toUpdate: oldObjects
@@ -14,7 +14,7 @@ class DeepUpsert {
   }
 
   static getItemsToUpsert(oldItems, newItems, comparable, cb){
-    const items = DeepUpsert.buildObjectsToUpsert(oldItems, newItems, comparable);
+    const items = Upsert.buildObjectsToUpsert(oldItems, newItems, comparable);
 
     return items.toUpdate
       .map(itemToUpdate => {
@@ -41,10 +41,10 @@ class DeepUpsert {
 
         const $child = child.$children
                    
-        const items = DeepUpsert.getItemsToUpsert(database[$property.key], dataset[$property.key], $property.comparator,
+        const items = Upsert.getItemsToUpsert(database[$property.key], dataset[$property.key], $property.comparator,
           (oldValues, newValues) => {
              if($child)
-                return DeepUpsert.setChildren(oldValues, newValues, $child);              
+                return Upsert.setChildren(oldValues, newValues, $child);              
           });
 
         return Object.assign(prevChild, { [$property.key]: items });
@@ -53,21 +53,26 @@ class DeepUpsert {
 
   static exec(matcher, dataset, properties){
     return this.findOne(matcher)
-    .lean()
-    .then(res => {
-      if(!res) 
-        return this.create(dataset.$set);
-      
-       const newChildren = DeepUpsert.setChildren(res, dataset.$set, properties.$children);
-       const toUpdate = Object.assign(res, dataset.$set, newChildren);
+      .lean()
+      .then(res => {
+        if(!res) 
+          return this.create(dataset.$set);
+        
+        let toUpdate = dataset.$set;
 
-      return this.update(matcher, toUpdate, { 
-        runValidators: true 
+        if(properties) {
+          const newChildren = Upsert.setChildren(res, dataset.$set, properties.$children);
+
+          toUpdate = Object.assign(res, dataset.$set, newChildren);
+        }        
+
+        return this.update(matcher, toUpdate, { 
+          runValidators: true 
+        })
+        .then(res => toUpdate);
       })
-      .then(res => toUpdate);
-    })
-    .catch(ex => console.log(ex))
+      .catch(ex => console.log(ex))
   }
 }
 
-export default DeepUpsert;
+export default Upsert;

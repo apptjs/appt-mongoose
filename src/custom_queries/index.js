@@ -1,7 +1,7 @@
-import DeepUpsert from './deepUpsert';
+import Upsert from './upsert';
 
-const deepUpsert = DeepUpsert.exec;
+const upsert = Upsert.exec;
 
 export default {
-  deepUpsert
+  upsert
 }
