@@ -5,11 +5,23 @@ class Upsert {
         .map(oldObject => {
           return {
             old: oldObject,
-            new: newObjects.find(newObject => newObject[comparable] == oldObject[comparable])
+            new: newObjects.find(newObject => {
+              if(oldObject[comparable] instanceof Date){
+                return new Date(newObject[comparable]) == oldObject[comparable]
+              } else {
+                return newObject[comparable].toString() == oldObject[comparable].toString()
+              }
+            })
           }              
         }),
       toCreate: newObjects
-        .filter(newObject => !oldObjects.some(oldObject => newObject[comparable] == oldObject[comparable]))
+        .filter(newObject => !oldObjects.some(oldObject => {
+          if(oldObject[comparable] instanceof Date){
+            return new Date(newObject[comparable]) == oldObject[comparable]
+          } else {
+            return newObject[comparable].toString() == oldObject[comparable].toString()
+          }
+        }))
     }
   }
 
