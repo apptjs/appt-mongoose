@@ -7,7 +7,7 @@ class Upsert {
             old: oldObject,
             new: newObjects.find(newObject => {
               if(oldObject[comparable] instanceof Date){
-                return new Date(newObject[comparable]) == oldObject[comparable]
+                return new Date(newObject[comparable]).toString() == oldObject[comparable].toString()
               } else {
                 return newObject[comparable].toString() == oldObject[comparable].toString()
               }
@@ -17,7 +17,7 @@ class Upsert {
       toCreate: newObjects
         .filter(newObject => !oldObjects.some(oldObject => {
           if(oldObject[comparable] instanceof Date){
-            return new Date(newObject[comparable]) == oldObject[comparable]
+            return new Date(newObject[comparable]).toString() == oldObject[comparable].toString()
           } else {
             return newObject[comparable].toString() == oldObject[comparable].toString()
           }
