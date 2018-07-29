@@ -57,13 +57,15 @@ class Upsert {
       .then(res => {
         if(!res) 
           return this.create(dataset.$set);
-        
-        let toUpdate = Object.assign(res, dataset.$set);
+        else if(res._id)
+          dataset.$set._id = res._id;
+
+        let toUpdate = dataset.$set;
 
         if(properties) {
-          const newChildren = Upsert.setChildren(res, dataset.$set, properties.$children);
+          const newChildren = Upsert.setChildren(res, toUpdate, properties.$children);
 
-          toUpdate = Object.assign(toUpdate, newChildren);
+          toUpdate = Object.assign(res, toUpdate, newChildren);
         }              
 
         return this.update(matcher, toUpdate, { 
