@@ -58,13 +58,13 @@ class Upsert {
         if(!res) 
           return this.create(dataset.$set);
         
-        let toUpdate = dataset.$set;
+        let toUpdate = Object.assign(res, dataset.$set);
 
         if(properties) {
           const newChildren = Upsert.setChildren(res, dataset.$set, properties.$children);
 
-          toUpdate = Object.assign(res, dataset.$set, newChildren);
-        }        
+          toUpdate = Object.assign(toUpdate, newChildren);
+        }              
 
         return this.update(matcher, toUpdate, { 
           runValidators: true 
