@@ -1,22 +1,36 @@
 {
   "name": "@appt/mongoose",
-  "version": "1.0.32",
-  "description": "",
+  "version": "1.0.33",
+  "description": "This a wrap for Mongoose ODM to work into the Appt's ecosystem with advanced database models and schemes.",
   "main": "./dist/index.js",
+  "bugs": {
+    "url": "https://github.com/apptjs/appt-mongoose/issues"
+  },
+  "homepage": "https://github.com/apptjs/appt-mongoose#readme",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:apptjs/appt-mongoose.git"
+  },
+  "author": {
+    "name": "Brab0",
+    "email": "brabo.rodrigo@gmail.com"
+  },
   "scripts": {
     "build": "rimraf dist/ && babel ./src --out-dir dist/ --copy-files",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "brab0 <brabo.rodrigo@gmail.com>",
-  "license": "ISC",
   "dependencies": {
-    "mongoose": "5.0.18",
-    "@appt/core": "file:../core"
+    "@appt/core": "^1.0.29",
+    "mongoose": "^5.3.7"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "rimraf": "^2.6.2"
+  },
+  "engines": {
+    "node": ">=8"
   }
 }
