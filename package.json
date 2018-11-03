@@ -22,7 +22,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@appt/core": "^1.0.29",
+    "@appt/core": "file:../core",
     "mongoose": "^5.3.7"
   },
   "devDependencies": {

@@ -12,11 +12,12 @@ We assume you got here after seeing the [Appt's Core](https://www.npmjs.com/pack
 The `@appt/mongoose` plugin export some resources which can be imported as seen below:
 ```javascript
 import {
-	Mongoose,
-	TModel,
-	TSchema,
-	SchemaTypes,
-	MongooseParse
+   Mongoose,   
+   MongooseParse,
+   TModel,
+   TSchema,
+   SchemaTypes,
+   SchemaProperties
 } from '@appt/mongoose';
 ```
 
@@ -26,36 +27,31 @@ At the example below, we have a component that needs to act as a database connec
 import { Component, TDatabase } from '@appt/core';
 import { Mongoose } from '@appt/mongoose';
 
-@Component({
-	extend: {
-		type: TDatabase,
-		use: [Mongoose],
-		config: {
-			uri: 'mongodb://localhost:27017/appt-demo',
-			debug:  true,
-			options: {
-				keepAlive: true
-			}
-		}
+const config = {
+	uri: 'mongodb://localhost:27017/appt-demo',
+	options: {
+		debug:  true,
+		useNewUrlParser:  true,
+		keepAlive: true
 	}
+}
+
+@Component({
+	extend: TDatabase(Mongoose, config.uri, config.options)
 })
 export class AppDatabase{}
 ```
 
 ### TModel
-This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect it to has a mongoose schema as well. To get there, just `use: ['TheSchema']` . You also can add any config allowed in a mongoose model by passing them into the config attribute.
+This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect it to has a mongoose schema as well as the first param. You also can add any config allowed for a mongoose model by passing them as second param.
 ```javascript
 import { Component } from '@appt/core';
 import { TModel } from '@appt/mongoose';
 
 @Component({
-	extend: {
-		type: TModel,
-		use: ['TheSchema'],
-		config: {}
-	}
+	extend: TModel('AppShema')
 })
-export class TheModel {
+export class MyModel {
 	constructor()
 	{
 	}
@@ -67,16 +63,13 @@ export class TheModel {
 ```
 
 ### TSchema
-The special type to transform a component into a Mongoose Schema. All the configurations accepted by mongoose can be passed into the config attribute.
+The special type to transform a component into a Mongoose Schema. All the configurations accepted by mongoose can be passed through the function `TSchema(config)`.
 ```javascript
 import { Component } from '@appt/core';
 import { TSchema } from '@appt/mongoose';
 
 @Component({
-	extend: {
-		type: TSchema,
-		config: {}
-	}
+	extend: TSchema
 })
 export class AppShema {
 	constructor(){
@@ -119,6 +112,54 @@ import { MongooseParse } from '@appt/mongoose';
 		})
 	}
 ...
+```
+
+### SchemaProperties
+Remember the `TSchema` example above? The implementations of mongoose schemas can has a lot more straightfoward approach using this helper. Let's see it:
+```javascript
+import { Component } from '@appt/core';
+import { TSchema, SchemaProperties } from '@appt/mongoose';
+
+@Component({
+	extend: TSchema,
+	inject: SchemaProperties
+})
+export class AppShema {
+	constructor({
+		asString,
+		asBoolean,
+		asObjectId,
+		asNumber,
+		asDate,
+		asEnum
+	})
+	{
+		// Defaults: trim: true, default: ""
+		// telephones is a array of strings
+		this.telephones = [ asString() ];
+		
+		// Defaults: default: 0
+		this.age = asNumber();
+
+		// Defaults: null
+		this.school = asObjectId();
+
+		// Defaults: default: false
+		this.active = asBoolean();
+
+		// Defaults: default: Date.now
+		this.created_at = asDate();
+
+		// Defaults: null
+		// Methods: ofStrings, ofNumbers, ofDates, ofBooleans, ofObjectIds
+		this.profile = asEnum({
+			default: 'student'
+		}).ofStrings([
+			'teacher', 
+			'student'
+		]);
+	}
+}
 ```
 
 ## Compatibility

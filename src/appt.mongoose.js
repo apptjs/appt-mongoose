@@ -14,41 +14,52 @@ const set = mongoose.set.bind(mongoose);
 
 var schemas = {};
 
-class TModel {
-  constructor() {
-    this.targetName = '';
+function TModel(main, options = null){
+  return {
+    target: ApptModel,
+    args: {
+      main: main,
+      options: options
+    }
+  };
+}
+
+class ApptModel {
+  constructor(extenderParams, Target, injectables) {
+    return this.exec(extenderParams, Target, injectables)
   }
    
-  normalizeComponents(components){  
+  normalizeComponents(component){  
     return new Promise(resolve => {
-      const component = components instanceof Array ? components[0] : components;
       const schemaPromise = typeof component === 'string' 
-          ? new apptEcosystem.getEntity(component, this.targetName)()
-          : new component();
+        ? new apptEcosystem.getEntity(component, this.targetName)()
+        : new component();
 
       return schemaPromise.then(comp => resolve(comp));
     });
   }
 
-  exec(extend, Target, injectables) {
+  exec(extenderParams, Target, injectables) {
     this.targetName = Target.name;
 
-    return this.normalizeComponents(extend.use)
-      .then(schema => this.getSchema(schema, Target.name))
+    return this.normalizeComponents(extenderParams.main)
+      .then(schema => this.getSchema(schema))
       .then(entitySchema => {
         if(models[Target.name]) {
             return models[Target.name]
         }
         else {
-          if(injectables && injectables.length > 0){
-            new Target(...injectables);
-          }
-                    
           entitySchema.loadClass(Target);
 
           entitySchema.statics = Object.assign(entitySchema.statics, customQueries);
 
-          const newModel = model(Target.name, entitySchema, extend.config);
+          const newModel = model(Target.name, entitySchema, extenderParams.options);
+
+          if(injectables && injectables.length > 0){
+            new Target(...injectables, newModel);
+          } else {
+            new Target(newModel);
+          }
 
           return newModel;
         }        
@@ -56,13 +67,10 @@ class TModel {
       .catch(err => console.log(err))
   }
 
-  getSchema(mySchema, targetName){
-    let schema;
-
-    if(mySchema.injectables)
-      schema = new mySchema.target(...mySchema.injectables);
-    else 
-      schema = new mySchema.target();
+  getSchema(mySchema){
+    const schema = mySchema.injectables
+      ? new mySchema.target(...mySchema.injectables)
+      : new mySchema.target();
 
     const parsedSchema = Object.keys(schema)
       .reduce((prev, crr) => {
@@ -70,58 +78,63 @@ class TModel {
       }, {});
 
     if(schemas && schemas[mySchema.target.name])
-      return new Schema(schemas[mySchema.target.name], mySchema.args);
+      return new Schema(schemas[mySchema.target.name], mySchema.options);
     else 
-      return new Schema(parsedSchema, mySchema.args);
+      return new Schema(parsedSchema, mySchema.options);
   }
 }
 
-class TSchema {
-   exec(extend, Target, injectables) {
+function TSchema(args){
+  return {
+    target: ApptSchema,
+    args: args
+  };
+}
+
+class ApptSchema {
+  constructor(extenderParams, Target, injectables){
+    return this.exec(extenderParams, Target, injectables)
+  }
+
+  exec(extenderParams, Target, injectables) {
     return new Promise(resolve => {
-      resolve({target: Target, args: extend.config, injectables: injectables})
+      resolve({
+        target: Target, 
+        options: extenderParams || {},
+        injectables: injectables
+      })
     })
   }
 }
 
 class Mongoose{
-  constructor(){
+  constructor(uri, options){
     this.instance = mongoose;
-
+    
     this.defaultConfig = {
-      uri: 'mongodb://localhost:27017/sample',
-      debug: false,
-      options: {}
+      uri: uri || 'mongodb://localhost:27017/sample',
+      debug: options && options.debug || false,
+      options: options || {}
     }
 
-    this.customConfig = this.defaultConfig;
+    delete this.defaultConfig.options.debug;
+
+    this.customConfig = this.defaultConfig;    
   }
 
   getInstance(){
     return this.instance;
   }
 
-  setUri(uri) {
-     this.customConfig.uri = uri || this.defaultConfig.uri;
-  }
-
-  setDebug(debug) {
-        this.customConfig.debug = debug || this.defaultConfig.debug;
-    }
-
-  setOptions(options) {
-      this.customConfig.options = options || this.defaultConfig.options;
-  }
-
-  exec(args) {
-     this.setUri(args && args.uri);     
-     this.setDebug(args && args.debug);
-     this.setOptions(args && args.options);
-     
-     return connect(this.customConfig.uri, this.customConfig.options)
+  exec() {
+    return connect(this.customConfig.uri, this.customConfig.options)
       .then(() => {    
         set('debug', this.customConfig.debug);
-        return this.customConfig;
+
+        return {
+          instance: this.instance,
+          config: this.customConfig
+        };
       })
       .catch(err => {        
         throw new Error(err)
