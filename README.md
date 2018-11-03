@@ -22,7 +22,7 @@ import {
 ```
 
 ### Mongoose
-At the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://www.npmjs.com/package/@appt/core#apptcore) package and it indicates our component should act as a database connector but also, it does not know *how or which kind of database to connect*? To this point we need to use a *"driver"*, which here is the *"Mongoose"*.  As the simple usage below shows, after `use` the Mongoose driver, you only need to provide the `uri` connection. If you need a little more configuration, you can set if you want to debug the connection *(default: false)* or even pass into options attribute any param allowed by the mongoose connection.
+At the example below, we have a component that needs to act as a database connector of an application. By default, an Appt component is just a class with a "signature" that it can be injected by other class. As our component here needs to a specific behavior, we need to make use of a *Special-Type Extender* called *TDatabase*. This special type makes part of the [@appt/core](https://www.npmjs.com/package/@appt/core#apptcore) package and it indicates our component should act as a database connector, but it does not know *how or which kind of database to connect*. That's why we need to use a *"driver"*, which here is *"Mongoose"*. At this point, you only need to provide the `uri` connection and, if you need a little more configuration, pass into options attribute any param allowed by the mongoose connection.
 ```javascript
 import { Component, TDatabase } from '@appt/core';
 import { Mongoose } from '@appt/mongoose';
@@ -43,7 +43,7 @@ export class AppDatabase{}
 ```
 
 ### TModel
-This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect it to has a mongoose schema as well as the first param. You also can add any config allowed for a mongoose model by passing them as second param.
+This Special-Type Extender add the Mongoose Model behavior to our component. That means once imported by another component (or even inside the model), any *mongoose/mongo* query method can be accessed into the class context. After define the type as a TModel component, the mongoose model expect to has a `mongoose schema` as first param. You also can add any configuration allowed for a mongoose models by passing them as second param.
 ```javascript
 import { Component } from '@appt/core';
 import { TModel } from '@appt/mongoose';
@@ -63,7 +63,7 @@ export class MyModel {
 ```
 
 ### TSchema
-The special type to transform a component into a Mongoose Schema. All the configurations accepted by mongoose can be passed through the function `TSchema(config)`.
+The special type to transform a component into a `Mongoose Schema`. All the configurations accepted by mongoose can be passed through it (`TSchema(config)`).
 ```javascript
 import { Component } from '@appt/core';
 import { TSchema } from '@appt/mongoose';
@@ -101,7 +101,7 @@ import { SchemaTypes } from '@appt/mongoose';
 ```
 
 ### MongooseParse
-This is an Appt interface for Mongoose ODM type parsers. It exposes every parser available by Mongoose.
+Another Appt interface, but in this case, for Mongoose ODM type parsers. It exposes every parser available by Mongoose.
 
 ```javascript
 import { MongooseParse } from '@appt/mongoose';
