@@ -1,6 +1,6 @@
 {
   "name": "@appt/mongoose",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "This a wrap for Mongoose ODM to work into the Appt's ecosystem with advanced database models and schemes.",
   "main": "./dist/index.js",
   "bugs": {
@@ -22,7 +22,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@appt/core": "^1.0.31",
+    "@appt/core": "^1.0.38",
     "mongoose": "^5.3.7"
   },
   "devDependencies": {
